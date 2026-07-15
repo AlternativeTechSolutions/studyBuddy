@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Study Buddy MVP</title>
+<link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>📚 Study Buddy <span class="badge">local MVP</span></h1>
+      <p class="sub">Paste notes or upload a PDF/TXT. Get a study guide + flashcards back.</p>
+    </header>
+
+    <main>
+      <section class="input-panel">
+        <label>Title (optional)</label>
+        <input id="title" type="text" placeholder="e.g. Chapter 4 - Cell Biology" />
+
+        <label>Paste text</label>
+        <textarea id="text" rows="10" placeholder="Paste your notes, article, or textbook excerpt here..."></textarea>
+
+        <label>...or upload a file (PDF or TXT)</label>
+        <input id="file" type="file" accept=".pdf,.txt" />
+
+        <button id="generateBtn">Generate Study Materials</button>
+        <p id="status" class="status"></p>
+
+        <div id="liveOutputPanel" class="live-output hidden">
+          <div class="live-output-label">Live model output</div>
+          <pre id="liveOutput"></pre>
+        </div>
+      </section>
+
+      <section class="history-panel">
+        <h2>Your Study Sets</h2>
+        <ul id="setsList"></ul>
+      </section>
+    </main>
+
+    <section id="results" class="results hidden">
+      <h2 id="resultTitle"></h2>
+      <p id="resultSummary" class="summary"></p>
+      <p id="resultUsage" class="usage"></p>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="guide">Study Guide</button>
+        <button class="tab-btn" data-tab="cards">Flashcards</button>
+      </div>
+
+      <div id="guideTab" class="tab-content">
+        <div id="guideContent"></div>
+      </div>
+
+      <div id="cardsTab" class="tab-content hidden">
+        <div id="cardCounter"></div>
+        <div id="flashcard" class="flashcard">
+          <div class="flashcard-inner">
+            <div class="flashcard-front"></div>
+            <div class="flashcard-back"></div>
+          </div>
+        </div>
+        <div class="card-controls">
+          <button id="prevCard">← Prev</button>
+          <button id="flipCard">Flip</button>
+          <button id="nextCard">Next →</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

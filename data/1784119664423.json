@@ -1,0 +1,53 @@
+{
+  "id": "1784119664423",
+  "createdAt": "2026-07-15T12:47:44.423Z",
+  "title": "Migrating Rails from Capistrano to Kamal: A Study Guide",
+  "summary": "This guide provides a comprehensive migration pathway for transitioning a Ruby on Rails application from Capistrano/Puma to Kamal. It outlines key differences, configuration requirements, step-by-step procedures, and critical operational pitfalls to watch out for.",
+  "studyGuide": "# Migrating Rails from Capistrano to Kamal\n\nTransitioning from a traditional Capistrano setup to Kamal (formerly MRSK) represents a paradigm shift. While Capistrano manages raw code deployments to bare-metal servers or VMs using SSH and symlinks, Kamal packages your application into a standardized, immutable Docker container, orchestrating deployments using Traefik as a reverse proxy.\n\n## Key Term Definitions\n* **Kamal**: A deployment tool designed to deploy web applications in Docker containers to any host with zero-downtime, utilizing SSH and basic Linux utilities.\n* **Traefik**: A modern HTTP reverse proxy and load balancer that Kamal automatically configures to route incoming traffic to your active container.\n* **Multi-stage Dockerfile**: A Dockerfile that uses multiple `FROM` statements to build assets in an intermediate container, keeping the final production image slim.\n\n## Step-by-Step Migration\n\n### 1. Dockerize Your Rails Application\nKamal requires a production-ready `Dockerfile`. If your Rails app is version 7.1 or higher, run `rails new` generators or manually add a Dockerfile that exposes port 3000, runs db migrations, and uses a multi-stage build to keep the image small. Ensure your local machine or CI/CD runner has Docker installed.\n\n### 2. Install and Initialize Kamal\nRemove Capistrano-related gems (`capistrano`, `capistrano-rails`, etc.) from your `Gemfile`. Add Kamal to your development dependencies:\n\n```ruby\ngem 'kamal', group: :development\n```\n\nRun the initialization command:\n```bash\nbundle exec kamal init\n```\nThis generates three files: `config/deploy.yml`, `.env`, and `config/deploy.providers.yml` (if applicable).\n\n### 3. Configure `config/deploy.yml`\nConfigure the core components of your deployment. Here is a baseline working configuration:\n\n```yaml\nservice: my-rails-app\nimage: username/my-rails-app\n\nservers:\n  web:\n    - 192.168.1.100\n\nregistry:\n  username: my-docker-username\n  password:\n    - KAMAL_REGISTRY_PASSWORD\n\nenv:\n  clear:\n    PORT: 3000\n    RAILS_LOG_TO_STDOUT: true\n  secret:\n    - RAILS_MASTER_KEY\n    - DATABASE_URL\n```\n\n### 4. Setup Secrets\nIn your local `.env` file (which is git-ignored), populate the necessary deployment variables:\n```env\nKAMAL_REGISTRY_PASSWORD=your_registry_token\nRAILS_MASTER_KEY=your_rails_master_key\nDATABASE_URL=postgresql://user:pass@host/db\n```\n\n### 5. Provision and Deploy\nEnsure your target servers have SSH key access configured. Run the initial setup command:\n```bash\nbundle exec kamal setup\n```\nThis command automatically installs Docker on your servers (if missing), starts Traefik, builds your local image, pushes it to your registry, pulls it to your servers, and boots the new containers.\n\n## Things to Keep an Eye Out For (Gotchas)\n* **Puma Configuration**: Ensure your `config/puma.rb` binds to port 3000 (standard environment variable configuration) rather than a Unix socket, as Traefik routes traffic over standard TCP ports inside the Docker network.\n* **Asset Compilation**: Capistrano compiled assets on the production server. Kamal compiles assets during the *Docker build stage*. Ensure your build environment has access to dummy credentials (like `SECRET_KEY_BASE_DUMMY=1`) to prevent build failures.\n* **Persistent Storage**: Capistrano used a 'shared' directory for user uploads. Since Docker containers are ephemeral, you must migrate user-uploaded files to cloud storage (e.g., AWS S3) or explicitly mount persistent Docker volumes under the `volumes` key in `config/deploy.yml`.\n* **Database Migrations**: Under Capistrano, migrations ran on the target server. In Kamal, migrations are executed inside a temporary container booted from the newly built image before the primary application container swaps.",
+  "flashcards": [
+    {
+      "question": "What is the primary architectural difference between Capistrano and Kamal?",
+      "answer": "Capistrano deploys code directly to a virtual machine using SSH and symlinks, while Kamal deploys the application as an immutable Docker container."
+    },
+    {
+      "question": "Which software does Kamal use as its default reverse proxy for zero-downtime deploys?",
+      "answer": "Kamal uses Traefik to route traffic to active container instances and manage container switches smoothly."
+    },
+    {
+      "question": "What command initializes Kamal configuration files in a Rails project?",
+      "answer": "Run 'bundle exec kamal init' to generate 'config/deploy.yml' and '.env' files."
+    },
+    {
+      "question": "How are secret environment variables (e.g. database URLs) injected into Kamal deployments?",
+      "answer": "Secrets are defined in a local, git-ignored '.env' file and listed under the 'env/secret' key in 'config/deploy.yml' to be securely pushed to the target servers."
+    },
+    {
+      "question": "Where are assets compiled in a Kamal deployment compared to Capistrano?",
+      "answer": "In Capistrano, assets compile on the production server; in Kamal, assets compile during the Docker image build stage locally or on a CI/CD runner."
+    },
+    {
+      "question": "What happens to Capistrano's 'shared' folder uploads in a containerized environment?",
+      "answer": "Because containers are ephemeral, uploads must be migrated to cloud storage (like Amazon S3) or mounted as persistent Docker volumes."
+    },
+    {
+      "question": "How does Puma's binding configuration change when migrating to Kamal?",
+      "answer": "Puma must be configured to bind to a TCP port (typically port 3000) rather than a local Unix socket, as Traefik routes network traffic to the container."
+    },
+    {
+      "question": "What command performs the initial environment setup, Docker installation, and first deploy in Kamal?",
+      "answer": "The command 'bundle exec kamal setup' prepares the remote servers and executes the initial deploy."
+    },
+    {
+      "question": "How does Kamal run database migrations during deployment?",
+      "answer": "Kamal boots a temporary 'release' container using the newly built image to run database migrations prior to launching the main web containers."
+    },
+    {
+      "question": "What is required on the local machine to build the Rails Docker images used by Kamal?",
+      "answer": "A running Docker daemon (or Docker Desktop/OrbStack) is required locally to execute the image builds and push them to the registry."
+    }
+  ],
+  "usage": {
+    "input_tokens": 218,
+    "output_tokens": 1631
+  }
+}

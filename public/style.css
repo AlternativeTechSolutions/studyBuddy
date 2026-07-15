@@ -1,0 +1,198 @@
+:root {
+  --bg: #0f1115;
+  --panel: #171a21;
+  --border: #2a2e38;
+  --text: #e8e9ed;
+  --muted: #9aa0ab;
+  --accent: #7c9eff;
+  --accent-dark: #5c7ce0;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.app {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
+}
+
+header h1 {
+  margin: 0 0 4px;
+  font-size: 26px;
+}
+
+.badge {
+  font-size: 11px;
+  background: var(--accent-dark);
+  color: white;
+  padding: 3px 8px;
+  border-radius: 20px;
+  vertical-align: middle;
+  margin-left: 6px;
+}
+
+.sub { color: var(--muted); margin-top: 0; }
+
+main {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+@media (min-width: 800px) {
+  main { grid-template-columns: 2fr 1fr; }
+}
+
+.input-panel, .history-panel, .results {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+  margin: 14px 0 6px;
+}
+
+input[type="text"], textarea, input[type="file"] {
+  width: 100%;
+  background: #0d0f14;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+textarea { resize: vertical; }
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+#generateBtn {
+  margin-top: 18px;
+  width: 100%;
+  background: var(--accent);
+  color: #0d0f14;
+  padding: 12px;
+  font-size: 15px;
+}
+#generateBtn:hover { background: var(--accent-dark); color: white; }
+#generateBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.status { min-height: 20px; font-size: 13px; color: var(--muted); }
+.status.error { color: #ff6b6b; }
+.status.success { color: #6bffa0; }
+
+.live-output {
+  margin-top: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #0d0f14;
+}
+.live-output.hidden { display: none; }
+.live-output-label {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 8px 12px 0;
+}
+#liveOutput {
+  margin: 0;
+  padding: 8px 12px 12px;
+  max-height: 220px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-size: 12px;
+  color: #8fd6ff;
+}
+
+.history-panel h2 { margin-top: 0; font-size: 16px; }
+#setsList { list-style: none; padding: 0; margin: 0; }
+#setsList li {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  margin-bottom: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#setsList li:hover { border-color: var(--accent); }
+#setsList .del { color: #ff6b6b; font-size: 12px; }
+
+.results { margin-top: 24px; }
+.results.hidden { display: none; }
+.summary { color: var(--muted); }
+.usage { font-size: 12px; color: var(--muted); }
+
+.tabs { display: flex; gap: 8px; margin: 16px 0; }
+.tab-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.tab-btn.active { background: var(--accent); color: #0d0f14; }
+.tab-content.hidden { display: none; }
+
+#guideContent { line-height: 1.6; }
+#guideContent h1, #guideContent h2, #guideContent h3 { color: var(--accent); }
+
+.flashcard {
+  perspective: 1000px;
+  height: 220px;
+  margin: 16px 0;
+}
+.flashcard-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.5s;
+  transform-style: preserve-3d;
+  cursor: pointer;
+}
+.flashcard-inner.flipped { transform: rotateY(180deg); }
+.flashcard-front, .flashcard-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  background: #0d0f14;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  font-size: 16px;
+}
+.flashcard-back { transform: rotateY(180deg); color: var(--accent); }
+
+.card-controls { display: flex; gap: 8px; justify-content: center; }
+.card-controls button { background: var(--border); color: var(--text); }
+.card-controls button:hover { background: var(--accent-dark); color: white; }
+
+#cardCounter { text-align: center; color: var(--muted); font-size: 13px; margin-bottom: 6px; }
